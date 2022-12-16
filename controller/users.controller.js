@@ -6,12 +6,12 @@ class UserController {
         
         const {username, email, password} = req.body
 
-        const allUsers = await db.query('SELECT * FROM user WHERE username = 1$, email = $2', [username, email])
+        const allUsers = await db.query('SELECT * FROM person WHERE username = 1$, email = $2', [username, email])
 
         if (allUsers.rows.length === 0){
             while (true){
                 const id = uuid.v4()
-                const usedId = await db.query('SELECT id FROM user WHERE id = $1', [id]);
+                const usedId = await db.query('SELECT id FROM person WHERE id = $1', [id]);
                 if (usedId.rows.length === 0){
                     break
                 }
@@ -20,7 +20,7 @@ class UserController {
                 }
             }
 
-            const newUser = await db.query('INSERT INTO user (id, email, password, username) VALUES ($1, $2, $3, $4) RETURNING *', [id, email, password, username])
+            const newUser = await db.query('INSERT INTO person (id, email, password, username) VALUES ($1, $2, $3, $4) RETURNING *', [id, email, password, username])
 
             res.json({
                 id: newUser.rows[0].id,
@@ -45,7 +45,7 @@ class UserController {
     async validationUsernameSignUp(req, res){
         // Добавить регулярку
         const { username } = req.body
-        const usedUsername = await db.query('SELECT username FROM user WHERE username = $1', [username])
+        const usedUsername = await db.query('SELECT username FROM person WHERE username = $1', [username])
 
         if (usedUsername.rows.length === 0){
             res.json({
@@ -84,7 +84,7 @@ class UserController {
         const {email} = req.body
 
         if(reg.test(email)){
-            const usedEmail = await db.query('SELECT * FROM user WHERE email = $1', [email])
+            const usedEmail = await db.query('SELECT * FROM person WHERE email = $1', [email])
 
             if (usedEmail.rows.length  === 0) {
                 res.json({statusValidation: true, message: "Success"})
@@ -104,7 +104,7 @@ class UserController {
         let invalidPassword = reg.test(req.body.password);
 
 
-        const oneUser = await db.query('SELECT * FROM user WHERE email = $1, username = $2, password = $3', [email, username, password])
+        const oneUser = await db.query('SELECT * FROM person WHERE email = $1, username = $2, password = $3', [email, username, password])
 
         if (oneUser.rows.length !== 0) {
             res.json({

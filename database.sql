@@ -15,4 +15,3 @@ CREATE TABLE post (
 )
 
 
-INSERT INTO person (name, surname) values ($1, $2) Returning *
