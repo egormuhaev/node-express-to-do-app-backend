@@ -101,11 +101,12 @@ class UserController {
 
     async getUser(req, res){
         let reg = /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}/g;
-        const {email, username, password} = req.body
+        const {username, password} = req.body
+
         let invalidPassword = reg.test(req.body.password);
 
 
-        const oneUser = await db.query('SELECT * FROM person WHERE email = $1 and username = $2 and password = $3', [email, username, password])
+        const oneUser = await db.query('SELECT * FROM person WHERE (email = $1 or username = $1) and password = $2', [username, password])
 
         if (oneUser.rows.length !== 0) {
             const message = invalidPassword ? "Invalid password" : "Success";
