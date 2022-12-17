@@ -2,17 +2,17 @@ const db = require('../config/configPostgres')
 const uuid = require('uuid')
 
 class UserController {
-    async addNewUser(req, res){
+    async addNewUser(req, res){ 
         
         const {username, email, password} = req.body
 
-        const allUsers = await db.query('SELECT * FROM person WHERE username = 1$, email = $2', [username, email])
+        const allUsers = await db.query('SELECT * FROM person WHERE username = $1 and email = $2', [username, email])
 
         if (allUsers.rows.length === 0){
             while (true){
-                const id = uuid.v4()
-                const usedId = await db.query('SELECT id FROM person WHERE id = $1', [id]);
-                if (usedId.rows.length === 0){
+                var id = uuid.v4()
+                const usedId = await db.query('SELECT * FROM person WHERE id = $1', [String(id)]);
+                if (usedId.rows.length === 0){ 
                     break
                 }
                 else{
@@ -38,7 +38,8 @@ class UserController {
                 password: "", 
                 username: "", 
                 status: false, 
-                message: "Cant create user"})
+                message: "Cant create user"
+            })
         }
     }
 
@@ -104,23 +105,24 @@ class UserController {
         let invalidPassword = reg.test(req.body.password);
 
 
-        const oneUser = await db.query('SELECT * FROM person WHERE email = $1, username = $2, password = $3', [email, username, password])
+        const oneUser = await db.query('SELECT * FROM person WHERE email = $1 and username = $2 and password = $3', [email, username, password])
 
         if (oneUser.rows.length !== 0) {
+            const message = invalidPassword ? "Invalid password" : "Success";
             res.json({
                 id: oneUser.rows[0].id,
                 username: oneUser.rows[0].username,
                 password: oneUser.rows[0].password,
                 invalidUsername: true,
                 invalidPassword,
-                message: invalidPassword ? "Invalid password" : "Success"
+                message
             })
         }
         else {
             res.json({
-                id: oneUser.rows[0].id,
-                username: oneUser.rows[0].username,
-                password: oneUser.rows[0].password,
+                id: "",
+                username: "",
+                password: "",
                 invalidUsername: true,
                 invalidPassword,
                 message: "Unknow user"
