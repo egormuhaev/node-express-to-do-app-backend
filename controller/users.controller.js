@@ -21,7 +21,7 @@ class UserController {
             }
 
             const newUser = await db.query('INSERT INTO person (id, email, password, username) VALUES ($1, $2, $3, $4) RETURNING *', [id, email, password, username])
-
+            const defaulGroup = await db.query('INSER INTO grouptask (user_id, name) VALUES ($1, $2)', [id, 'default'])
             res.json({
                 id: newUser.rows[0].id,
                 email: newUser.rows[0].email,

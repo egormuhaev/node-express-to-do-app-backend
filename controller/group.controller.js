@@ -13,18 +13,22 @@ class GroupController {
         }
     }
 
-    async deleteGroup(req, res){
-
+    async deleteGroupById(req, res){
+        const id = req.params.id
+        const delGroup = await db.query('DELETE FROM grouptask WHERE id = $1 RETURNING *', [id])
+        res.json(delGroup.rows)
     }
 
-    async renameGroup(req, res){
-
+    async renameGroupById(req, res){
+        const {newGroupName, id} = req.body
+        const updGroup = await db.query('UPDATE grouptask SET name = $1 WHERE id = $2 RETURNING *', [newGroupName, id])
+        res.json(updGroup.rows)
     }
 
     async getAllGroupByUser(req, res){
         const id = req.params.id
         const allGroupByUser = await db.query('SELECT * FROM grouptask WHERE user_id = $1', [id])
-        res.json(allGroupByUser.rows)
+        res.json(allGroupByUser.rows[0])
     }   
 }
 
