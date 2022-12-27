@@ -63,17 +63,18 @@ class TaskController {
         const {task_id, group_id} = req.body
         try{   
             const updateTask = await db.query('UPDATE task SET group_id = $1 WHERE id = $2 RETURNING *', [group_id, task_id])
+            res.json(updateTask.rows)
         }
         catch(e){
             res.json(e)
         }
     }
 
-    async setImpTaskById(){
+    async setImpTaskById(req, res){
         
     }
 
-    async getAllTaskByUserId(){
+    async getAllTaskByUserId(req, res){
 
     }
 }
