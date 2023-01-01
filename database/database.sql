@@ -1,4 +1,3 @@
-
 CREATE TABLE person (
     id VARCHAR(255) PRIMARY KEY,
     email VARCHAR(255),
@@ -39,6 +38,7 @@ CREATE TABLE event (
     user_id VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES person (id) ON DELETE CASCADE
 )
+
 
 
 

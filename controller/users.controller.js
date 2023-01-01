@@ -21,7 +21,7 @@ class UserController {
             }
 
             const newUser = await db.query('INSERT INTO person (id, email, password, username) VALUES ($1, $2, $3, $4) RETURNING *', [id, email, password, username])
-            const defaulGroup = await db.query('INSER INTO grouptask (user_id, name) VALUES ($1, $2)', [id, 'default'])
+            const defaulGroup = await db.query('INSERT INTO grouptask (user_id, name) VALUES ($1, $2)', [id, 'default'])
             res.json({
                 id: newUser.rows[0].id,
                 email: newUser.rows[0].email,
@@ -96,6 +96,19 @@ class UserController {
         }
         else {
             res.json({statusValidation: false, message: "Invalid email"})
+        }
+    }
+
+    async getUserById(req, res) {
+        const id = req.params.id
+        
+        try {
+            const user = await db.query('Select * from person WHERE id = $1',  [id])
+            res.json(user.rows[0])
+        }
+        catch(e){
+            console.log(e)
+            res.json(e)
         }
     }
 

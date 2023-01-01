@@ -21,8 +21,26 @@ app.use('/api', groupRouter)
 app.use('/api', taskRouter)
 app.use('/', taskRouter)
 
+app.get('/test-jest-std-api', (req, res) => {
+    res.json([
+        {
+            'id': 1,
+            'name': 'Egor'
+        },
+
+        {
+            'id': 2,
+            'name': 'Andrey'
+        },
+
+        {
+            'id': 3,
+            'name': 'Katy'
+        }
+    ])
+})
+
 
 app.listen(PORT, (error) => {
     error ? console.log(error) : console.log(`Server start on PORT: ${PORT}`)
 });
-

@@ -12,19 +12,26 @@ class TaskController {
             important, 
             group, 
             user_id} = req.body
+        
+            var groupFeg = group
+
         try {
             if (group === ""){
-                const defaultGroup = await db.query("SELECT * FROM grouptask WHERE user_id = $1 AND name = 'default'", [user_id])
-                if (defaultGroup.rows[0].id){
-                    group = defaultGroup.rows[0].id
+                const nameDefaulGroup = 'default';
+                const defaultGroup = await db.query("SELECT * FROM grouptask WHERE user_id = $1 AND name = $2", [user_id, nameDefaulGroup])
+                console.log(defaultGroup.rows.length)
+                if (defaultGroup.rows.length !== 0){
+                    console.log(defaultGroup.rows[0].id)
+                    groupFeg = defaultGroup.rows[0].id
                 }
                 else {
                     res.json({message: "Error"})
                 }
             }
+            
         
             const newTask = await db.query('INSERT INTO task (name, description, deadline, notification, tags, important, status, group_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', 
-            [name, discription, deadline, notification, tags, important, false, group, user_id])
+            [name, discription, deadline, notification, tags, important, false, groupFeg, user_id])
             res.json(newTask.rows)
         }
         catch(e){
@@ -35,7 +42,7 @@ class TaskController {
     }
 
     async deleteTaskById(req, res){
-        const {id} = req.body
+        const id = req.params.id
         try {
             const delTask = await db.query('DELETE INTO task WHERE id = $1 RETURNING *', [id]) 
             res.json(delTask.rows)
@@ -47,7 +54,7 @@ class TaskController {
     }
 
     async comleteTaskById(req, res){
-        const {id} = req.body
+        const id = req.params.id
         try {
             const tasks = await db.query('SELECT * FROM task WHERE id = $1', [id])
             const newTaskStatus =  !Boolean(tasks.rows[0].status)
@@ -71,12 +78,30 @@ class TaskController {
     }
 
     async setImpTaskById(req, res){
-        
+        const id = req.params.id
+        try {
+            const impTaskStatus = await db.query('SELECT * FROM task WHERE id = $1', [id])
+            const newTaskStatus = !Boolean(impTaskStatus.rows[0].important)
+            const updateTask = await db.query('UPDATE task SET important = $1 WHERE id = $2 RETURNING *', [newTaskStatus, id])
+            res.json(updateTask.rows)
+        }
+        catch(e){
+            console.log(e)
+            res.json({message: e})
+        }
     }
 
     async getAllTaskByUserId(req, res){
-
-    }
+        const user_id = req.params.id
+        try {
+            const allTasks = await db.query('SELECT * FROM task WHERE id = $1', [user_id])
+            res.json(allTasks.rows)
+        }
+        catch(e) {
+            console.log(e)
+            res.json(e)
+        }
+    }   
 }
 
 module.exports = new TaskController()

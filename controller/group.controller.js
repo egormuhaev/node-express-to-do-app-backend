@@ -2,10 +2,10 @@ const db = require('../config/configPostgres')
 
 class GroupController {
     async addNewGroupByUser(req, res){
-        const {user_id, nameGroup} = req.body
-        const userById = await db.query('SELECT * FROM person WHERE id = $1', [user_id])
+        const {userId, nameGroup} = req.body
+        const userById = await db.query('SELECT * FROM person WHERE id = $1', [userId])
         if (userById.rows.length !== 0){
-            const newGroup = await db.query('INSERT INTO grouptask (user_id, name) VALUES ($1, $2) RETURNING *', [user_id, nameGroup])
+            const newGroup = await db.query('INSERT INTO grouptask (user_id, name) VALUES ($1, $2) RETURNING *', [userId, nameGroup])
             res.json({userId: newGroup.rows[0].user_id, name: newGroup.rows[0].name, id: newGroup.rows[0].id, status: true})
         }
         else {
